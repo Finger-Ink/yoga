@@ -23,7 +23,7 @@ podspec = Pod::Spec.new do |spec|
   spec.platform = :ios
   spec.ios.deployment_target = '8.0'
   spec.ios.frameworks = 'UIKit'
-  spec.dependency 'Yoga', git: "https://github.com/Finger-Ink/yoga.git"
+  spec.dependency 'Yoga', '~> 1.14'
   spec.source_files = 'YogaKit/Source/*.{h,m,swift}'
   spec.public_header_files = 'YogaKit/Source/{YGLayout,UIView+Yoga}.h'
   spec.private_header_files = 'YogaKit/Source/YGLayout+Private.h'
