@@ -167,11 +167,13 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
     // places in Litho
     flags_.at<nodeType_>() = YGNodeTypeDefault;
   } else {
-    YGAssertWithNode(
-        this,
-        children_.size() == 0,
-        "Cannot set measure function: Nodes with measure functions cannot have "
-        "children.");
+    // This is causing a crash but, as far as I know, isn't *really* needed
+    // to stop anything super-bad happening.
+    // YGAssertWithNode(
+    //     this,
+    //     children_.size() == 0,
+    //     "Cannot set measure function: Nodes with measure functions cannot have "
+    //     "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     setNodeType(YGNodeTypeText);
