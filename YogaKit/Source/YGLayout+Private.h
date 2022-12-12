@@ -20,16 +20,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface UIView (YogaKitAutoApplyLayout)
-
-@property(nonatomic) CGFloat _yoga_maxLayoutWidth;
-
-#if TARGET_OS_OSX
-@property(nonatomic) BOOL _yoga_isFittingSize;
-#endif
-
-- (BOOL)_yoga_isAutoLayoutEnabled;
-
-@end
-
 NS_ASSUME_NONNULL_END

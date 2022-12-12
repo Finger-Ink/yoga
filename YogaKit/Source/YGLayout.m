@@ -280,19 +280,7 @@ YG_PROPERTY(CGFloat, aspectRatio, AspectRatio)
     }
 
     YGNodeMarkDirty(node);
-
-    const UIView *view = self.rootYogaView;
-    if (!view) {
-        return;
-    }
-
-    if (view._yoga_isAutoLayoutEnabled) {
-        view._yoga_maxLayoutWidth = YGUndefined;
-        [view invalidateIntrinsicContentSize];
-#if !TARGET_OS_OSX
-        [view.superview layoutIfNeeded];
-#endif
-    }
+    return;
 }
 
 - (NSUInteger)numberOfChildren {
