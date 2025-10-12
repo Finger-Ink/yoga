@@ -368,6 +368,14 @@ YG_PROPERTY(CGFloat, aspectRatio, AspectRatio)
     }
 }
 
+- (void)detachFromOwner {
+    const YGNodeRef node = self.node;
+    YGNodeRef owner = YGNodeGetOwner(node);
+    if (owner != NULL) {
+        YGNodeRemoveChild(owner, node);
+    }
+}
+
 #pragma mark - Private
 
 static YGSize YGMeasureView(YGNodeRef node, double width, YGMeasureMode widthMode, double height, YGMeasureMode heightMode) {

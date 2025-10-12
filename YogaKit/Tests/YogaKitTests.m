@@ -8,6 +8,7 @@
 #import <XCTest/XCTest.h>
 
 @import YogaKit;
+#import "YGLayout+Private.h"
 
 #if TARGET_OS_OSX
 
@@ -80,6 +81,28 @@
 @end
 
 @implementation YogaKitTests
+- (void)testDetachFromOwnerDetachesWithoutTouchingUIKit {
+  UIView *parent1 = [[UIView alloc] initWithFrame:CGRectZero];
+  UIView *parent2 = [[UIView alloc] initWithFrame:CGRectZero];
+  UIView *child = [[UIView alloc] initWithFrame:CGRectZero];
+
+  parent1.yoga.isIncludedInLayout = YES;
+  parent2.yoga.isIncludedInLayout = YES;
+  child.yoga.isIncludedInLayout = YES;
+
+  [parent1 addSubview:child];
+  // Attach nodes into yoga tree by doing a simple calculation
+  (void)[parent1.yoga calculateLayoutWithSize:CGSizeMake(YGUndefined, YGUndefined)];
+
+  // Detach child from its Yoga owner only
+  [child.yoga detachFromOwner];
+
+  // Now add to second parent; should not crash and owner should be updated
+  [parent2 addSubview:child];
+  (void)[parent2.yoga calculateLayoutWithSize:CGSizeMake(YGUndefined, YGUndefined)];
+
+  XCTAssertEqual(YGNodeGetOwner(child.yoga.node), parent2.yoga.node);
+}
 
 - (void)testConfigureLayoutIsNoOpWithNilBlock {
   UIView* view = [[UIView alloc] initWithFrame:CGRectZero];

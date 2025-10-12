@@ -14,6 +14,13 @@ import CoreGraphics
 import YogaKit
 
 public extension YGLayout {
+    // Wrapper that forwards to Obj-C selector to avoid name collision/recursion
+    @inlinable func detachFromOwner() {
+        self._detachFromOwner()
+    }
+}
+
+public extension YGLayout {
 
     @inlinable @discardableResult func direction(_ value: YGDirection) -> YGLayout {
         direction = value

@@ -116,6 +116,12 @@ typedef NS_OPTIONS(NSInteger, YGDimensionFlexibility) {
 - (void)markDirty;
 
 /**
+ * Detaches this node from its current Yoga owner, if any.
+ * Does not touch the UIKit view hierarchy.
+ */
+- (void)detachFromOwner NS_SWIFT_NAME(_detachFromOwner());
+
+/**
  In ObjC land, every time you access `view.yoga.*` you are adding another
  `objc_msgSend` to your code. If you plan on making multiple changes to
  YGLayout, it's more performant to use this method, which uses a single
