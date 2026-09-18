@@ -77,6 +77,15 @@
 #define kScaleFactor UIScreen.mainScreen.scale
 #endif
 
+#if !TARGET_OS_OSX
+/// A view class with no sizeThatFits: of its own.
+@interface YGPlainSubview : UIView
+@end
+
+@implementation YGPlainSubview
+@end
+#endif
+
 @interface YogaKitTests : XCTestCase
 @end
 
@@ -1024,5 +1033,49 @@
   XCTAssertEqual(container.frame.size.width, 200);
   XCTAssertEqual(container.frame.size.height, 80 + 16 + 180 + 24 + 100);
 }
+
+#if !TARGET_OS_OSX
+- (void)testViewWithNoOwnSizeThatFitsMeasuresAsZeroAfterItHadAFrame {
+  UIView* container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+  container.yoga.flexDirection = YGFlexDirectionColumn;
+  container.yoga.alignItems = YGAlignFlexStart;
+  container.yoga.width = YGPointValue(300);
+  container.yoga.height = YGPointValue(300);
+
+  YGPlainSubview* plain = [[YGPlainSubview alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+  plain.yoga.isIncludedInLayout = YES;
+  [container addSubview:plain];
+
+  [container.yoga applyLayoutPreservingOrigin:NO];
+  XCTAssertEqual(plain.frame.size.width, 0);
+  XCTAssertEqual(plain.frame.size.height, 0);
+
+  // The view gets a frame again, and the next layout must still measure it as zero.
+  plain.frame = CGRectMake(0, 0, 50, 50);
+  [plain.yoga markDirty];
+  [container.yoga applyLayoutPreservingOrigin:NO];
+  XCTAssertEqual(plain.frame.size.width, 0);
+  XCTAssertEqual(plain.frame.size.height, 0);
+}
+
+- (void)testLabelMeasuresItsText {
+  UIView* container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+  container.yoga.flexDirection = YGFlexDirectionColumn;
+  container.yoga.alignItems = YGAlignFlexStart;
+  container.yoga.width = YGPointValue(300);
+  container.yoga.height = YGPointValue(300);
+
+  UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
+  label.text = @"Hello, Yoga";
+  label.yoga.isIncludedInLayout = YES;
+  [container addSubview:label];
+
+  [container.yoga applyLayoutPreservingOrigin:NO];
+  const CGSize fitted = [label sizeThatFits:CGSizeMake(300, 300)];
+  XCTAssertGreaterThan(fitted.width, 0);
+  XCTAssertEqualWithAccuracy(label.frame.size.width, fitted.width, 0.5);
+  XCTAssertEqualWithAccuracy(label.frame.size.height, fitted.height, 0.5);
+}
+#endif
 
 @end

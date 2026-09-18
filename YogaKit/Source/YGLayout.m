@@ -228,6 +228,17 @@ YG_PROPERTY(CGFloat, aspectRatio, AspectRatio)
 
 @end
 
+#if !TARGET_OS_OSX
+static IMP YGBaseSizeThatFits(void) {
+    static IMP imp;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        imp = [UIView instanceMethodForSelector:@selector(sizeThatFits:)];
+    });
+    return imp;
+}
+#endif
+
 @implementation YGLayout
 
 - (instancetype)initWithView:(UIView*)view {
@@ -237,7 +248,15 @@ YG_PROPERTY(CGFloat, aspectRatio, AspectRatio)
         YGNodeSetContext(_node, (__bridge void*)view);
        
         _isIncludedInLayout = YES;
+#if TARGET_OS_OSX
         _isBaseView = [view isMemberOfClass:UIView.class] || [view isMemberOfClass:UIControl.class];
+#else
+        // A view whose class does not override sizeThatFits: has no size of its own. The
+        // default implementation returns the current size of the view, so such a view must
+        // measure as zero, not as the size of its last layout. This covers every subclass
+        // with no override, where the check on UIView and UIControl covered those two only.
+        _isBaseView = [view methodForSelector:@selector(sizeThatFits:)] == YGBaseSizeThatFits();
+#endif
     }
 
     return self;
